@@ -1,0 +1,141 @@
+import Toggle from './Toggle.jsx';
+import { wordCategories } from '../data/categories.js';
+import { questionCategories } from '../data/qcategories.js';
+
+const DISCUSSION_OPTIONS = [
+  { value: 60, label: '1 min' },
+  { value: 120, label: '2 min' },
+  { value: 180, label: '3 min' },
+  { value: 300, label: '5 min' },
+  { value: 600, label: '10 min' },
+];
+
+export default function SettingsPanel({ settings, onChange, disabled, playerCount }) {
+  const isWord = settings.gameMode === 'WORD';
+  const categories = isWord ? wordCategories : questionCategories;
+
+  const update = (key, value) => {
+    if (disabled) return;
+    onChange({ ...settings, [key]: value });
+  };
+
+  const maxImposters = Math.max(1, playerCount - 1);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Players & Impostors */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl p-4 text-center">
+          <p className="text-gray-400 text-xs mb-1">Players in lobby</p>
+          <p className="text-2xl font-bold text-white">{playerCount}</p>
+        </div>
+        <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl p-4">
+          <p className="text-gray-400 text-xs mb-2">Impostors</p>
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => update('numImposters', Math.max(1, settings.numImposters - 1))}
+              disabled={disabled || settings.numImposters <= 1}
+              className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
+            >−</button>
+            <span className="text-2xl font-bold">{settings.numImposters}</span>
+            <button
+              onClick={() => update('numImposters', Math.min(maxImposters, settings.numImposters + 1))}
+              disabled={disabled || settings.numImposters >= maxImposters}
+              className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
+            >+</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Game Mode */}
+      <div>
+        <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Game Mode</p>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { id: 'WORD', icon: 'Tt', title: 'Word Game', sub: "Find who doesn't know the secret word" },
+            { id: 'QUESTION', icon: '?', title: 'Question Game', sub: 'Find who got a different question' },
+          ].map((m) => (
+            <button
+              key={m.id}
+              onClick={() => update('gameMode', m.id)}
+              disabled={disabled}
+              className={`p-4 rounded-2xl border-2 text-left transition-all
+                ${settings.gameMode === m.id
+                  ? 'border-purple-500 bg-purple-600/15'
+                  : 'border-[#352a5e] bg-[#1e1640] hover:border-purple-600/40'}
+                ${disabled ? 'cursor-default' : 'cursor-pointer'}`}
+            >
+              <div className={`text-2xl font-bold mb-1 ${settings.gameMode === m.id ? 'text-purple-400' : 'text-gray-400'}`}>
+                {m.icon}
+              </div>
+              <p className="font-semibold text-sm">{m.title}</p>
+              <p className="text-gray-400 text-xs mt-0.5">{m.sub}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#352a5e]">
+          <p className="font-semibold text-sm">Category</p>
+          <select
+            value={settings.category}
+            onChange={(e) => update('category', e.target.value)}
+            disabled={disabled}
+            className="bg-[#251c4a] border border-[#352a5e] text-purple-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-purple-500 disabled:opacity-50"
+          >
+            <option value="all">All Categories</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Toggles */}
+        {[
+          { key: 'showCategoryToImpostor', label: 'Show Category to Impostor', icon: '👁' },
+          { key: 'showHintToImpostor', label: 'Show Hint to Impostor', icon: '💡' },
+          { key: 'impostersKnowEachOther', label: 'Impostors Know Each Other', icon: '🤝' },
+          { key: 'allowImpostorGuess', label: 'Allow Impostor Word Guess', icon: '🎯' },
+        ].map((t, i, arr) => (
+          <div
+            key={t.key}
+            className={`flex items-center justify-between px-4 py-3 ${i < arr.length - 1 ? 'border-b border-[#352a5e]' : ''}`}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-base">{t.icon}</span>
+              <p className="text-sm">{t.label}</p>
+            </div>
+            <Toggle
+              checked={settings[t.key]}
+              onChange={(v) => update(t.key, v)}
+              disabled={disabled}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Discussion Timer */}
+      <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl p-4">
+        <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Discussion Time</p>
+        <div className="flex gap-2 flex-wrap">
+          {DISCUSSION_OPTIONS.map((o) => (
+            <button
+              key={o.value}
+              onClick={() => update('discussionSeconds', o.value)}
+              disabled={disabled}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all
+                ${settings.discussionSeconds === o.value
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-[#352a5e] text-gray-300 hover:bg-[#3d3270]'}
+                ${disabled ? 'cursor-default' : 'cursor-pointer'}`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
