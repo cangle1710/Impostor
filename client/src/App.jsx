@@ -1,5 +1,5 @@
 import React from 'react';
-import { SocketProvider, useSocket } from './context/SocketContext.jsx';
+import { GameProvider as SocketProvider, useSocket } from './context/GameContext.jsx';
 import HomePage from './pages/HomePage.jsx';
 import LobbyPage from './pages/LobbyPage.jsx';
 import RoleRevealPage from './pages/RoleRevealPage.jsx';
