@@ -2,7 +2,7 @@ import { useGame } from '../context/GameContext.jsx';
 import Timer from '../components/Timer.jsx';
 
 export default function DiscussionPage() {
-  const { settings, discussionEndsAt, startVoting } = useGame();
+  const { settings, discussionEndsAt, revealResults } = useGame();
 
   return (
     <div className="min-h-dvh bg-bg flex flex-col px-4 py-8 safe-pt safe-pb">
@@ -23,7 +23,7 @@ export default function DiscussionPage() {
           <Timer
             endsAt={discussionEndsAt}
             totalSeconds={settings.discussionSeconds}
-            onExpire={startVoting}
+            onExpire={revealResults}
           />
         </div>
 
@@ -40,10 +40,10 @@ export default function DiscussionPage() {
         {/* Skip to voting */}
         <div className="mt-auto pt-2">
           <button
-            onClick={startVoting}
+            onClick={revealResults}
             className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl text-lg transition-colors active:scale-95"
           >
-            Start Voting →
+            Reveal Results →
           </button>
         </div>
       </div>

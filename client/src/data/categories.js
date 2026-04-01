@@ -9,4 +9,12 @@ export const wordCategories = [
   { id: 'technology', label: 'Technology' },
   { id: 'hobbies', label: 'Hobbies' },
   { id: 'school', label: 'School Subjects' },
+  { id: 'music', label: 'Music' },
+  { id: 'vehicles', label: 'Vehicles & Transport' },
+  { id: 'fantasy', label: 'Fantasy & Mythology' },
+  { id: 'space', label: 'Space & Astronomy' },
+  { id: 'food_places', label: 'Restaurants & Cuisine' },
+  { id: 'holidays', label: 'Holidays & Events' },
+  { id: 'emotions', label: 'Emotions & Feelings' },
+  { id: 'clothing', label: 'Clothing & Fashion' },
 ];

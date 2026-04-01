@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef } from 'react';
-import { buildRound, getRolePayload, resolveVotes } from '../engine.js';
+import { buildRound, getRolePayload } from '../engine.js';
 
 const GameContext = createContext(null);
 
@@ -81,36 +81,15 @@ function reducer(state, action) {
       return { ...state, phase: 'DISCUSSION', discussionEndsAt: endsAt };
     }
 
-    case 'START_VOTING':
-      return { ...state, phase: 'VOTING', votes: {} };
-
-    case 'CAST_VOTE': {
-      const current = state.votes[action.targetId] || 0;
-      return { ...state, votes: { ...state.votes, [action.targetId]: current + 1 } };
-    }
-
-    case 'SHOW_RESULTS': {
-      const results = resolveVotes(state.votes, state.players, state.round, state.settings);
-      return { ...state, phase: 'RESULTS', results };
-    }
-
-    case 'IMPOSTOR_GUESS_WIN': {
-      return {
-        ...state,
-        phase: 'RESULTS',
-        results: {
-          caught: false,
-          eliminated: null,
-          impostors: state.round.impostorIds.map((id) => {
-            const p = state.players.find((pl) => pl.id === id);
-            return { id, name: p?.name || 'Unknown' };
-          }),
-          secret: state.round.word,
-          impostorGuessedCorrectly: true,
-          guesserName: action.guesserName,
-          votes: state.votes,
-        },
-      };
+    case 'REVEAL_RESULTS': {
+      const impostors = state.round.impostorIds.map((id) => {
+        const p = state.players.find((pl) => pl.id === id);
+        return { id, name: p?.name || 'Unknown' };
+      });
+      const secret = state.settings.gameMode === 'WORD'
+        ? state.round.word
+        : state.round.regularQuestion;
+      return { ...state, phase: 'RESULTS', results: { impostors, secret } };
     }
 
     case 'PLAY_AGAIN':
@@ -146,18 +125,7 @@ export function GameProvider({ children }) {
     dispatch({ type: 'START_DISCUSSION' });
   }, []);
 
-  const startVoting = useCallback(() => {
-    if (discussionTimerRef.current) clearTimeout(discussionTimerRef.current);
-    dispatch({ type: 'START_VOTING' });
-  }, []);
-
-  const castVote = useCallback((targetId) => dispatch({ type: 'CAST_VOTE', targetId }), []);
-
-  const showResults = useCallback(() => dispatch({ type: 'SHOW_RESULTS' }), []);
-
-  const impostorGuessWin = useCallback((guesserName) => {
-    dispatch({ type: 'IMPOSTOR_GUESS_WIN', guesserName });
-  }, []);
+  const revealResults = useCallback(() => dispatch({ type: 'REVEAL_RESULTS' }), []);
 
   const playAgain = useCallback(() => dispatch({ type: 'PLAY_AGAIN' }), []);
 
@@ -180,10 +148,7 @@ export function GameProvider({ children }) {
       startGame,
       advanceReveal,
       startDiscussion,
-      startVoting,
-      castVote,
-      showResults,
-      impostorGuessWin,
+      revealResults,
       playAgain,
     }}>
       {children}
