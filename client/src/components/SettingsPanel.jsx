@@ -10,12 +10,11 @@ const DISCUSSION_OPTIONS = [
   { value: 600, label: '10 min' },
 ];
 
-export default function SettingsPanel({ settings, onChange, disabled, playerCount }) {
+export default function SettingsPanel({ settings, onChange, playerCount }) {
   const isWord = settings.gameMode === 'WORD';
   const categories = isWord ? wordCategories : questionCategories;
 
   const update = (key, value) => {
-    if (disabled) return;
     onChange({ ...settings, [key]: value });
   };
 
@@ -26,7 +25,7 @@ export default function SettingsPanel({ settings, onChange, disabled, playerCoun
       {/* Players & Impostors */}
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl p-4 text-center">
-          <p className="text-gray-400 text-xs mb-1">Players in lobby</p>
+          <p className="text-gray-400 text-xs mb-1">Players</p>
           <p className="text-2xl font-bold text-white">{playerCount}</p>
         </div>
         <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl p-4">
@@ -34,13 +33,13 @@ export default function SettingsPanel({ settings, onChange, disabled, playerCoun
           <div className="flex items-center justify-between">
             <button
               onClick={() => update('numImposters', Math.max(1, settings.numImposters - 1))}
-              disabled={disabled || settings.numImposters <= 1}
+              disabled={settings.numImposters <= 1}
               className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
             >−</button>
             <span className="text-2xl font-bold">{settings.numImposters}</span>
             <button
               onClick={() => update('numImposters', Math.min(maxImposters, settings.numImposters + 1))}
-              disabled={disabled || settings.numImposters >= maxImposters}
+              disabled={settings.numImposters >= maxImposters}
               className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
             >+</button>
           </div>
@@ -58,12 +57,10 @@ export default function SettingsPanel({ settings, onChange, disabled, playerCoun
             <button
               key={m.id}
               onClick={() => update('gameMode', m.id)}
-              disabled={disabled}
-              className={`p-4 rounded-2xl border-2 text-left transition-all
+              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer
                 ${settings.gameMode === m.id
                   ? 'border-purple-500 bg-purple-600/15'
-                  : 'border-[#352a5e] bg-[#1e1640] hover:border-purple-600/40'}
-                ${disabled ? 'cursor-default' : 'cursor-pointer'}`}
+                  : 'border-[#352a5e] bg-[#1e1640] hover:border-purple-600/40'}`}
             >
               <div className={`text-2xl font-bold mb-1 ${settings.gameMode === m.id ? 'text-purple-400' : 'text-gray-400'}`}>
                 {m.icon}
@@ -82,8 +79,7 @@ export default function SettingsPanel({ settings, onChange, disabled, playerCoun
           <select
             value={settings.category}
             onChange={(e) => update('category', e.target.value)}
-            disabled={disabled}
-            className="bg-[#251c4a] border border-[#352a5e] text-purple-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-purple-500 disabled:opacity-50"
+            className="bg-[#251c4a] border border-[#352a5e] text-purple-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-purple-500"
           >
             <option value="all">All Categories</option>
             {categories.map((c) => (
@@ -110,7 +106,6 @@ export default function SettingsPanel({ settings, onChange, disabled, playerCoun
             <Toggle
               checked={settings[t.key]}
               onChange={(v) => update(t.key, v)}
-              disabled={disabled}
             />
           </div>
         ))}
@@ -124,12 +119,10 @@ export default function SettingsPanel({ settings, onChange, disabled, playerCoun
             <button
               key={o.value}
               onClick={() => update('discussionSeconds', o.value)}
-              disabled={disabled}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer
                 ${settings.discussionSeconds === o.value
                   ? 'bg-purple-600 text-white'
-                  : 'bg-[#352a5e] text-gray-300 hover:bg-[#3d3270]'}
-                ${disabled ? 'cursor-default' : 'cursor-pointer'}`}
+                  : 'bg-[#352a5e] text-gray-300 hover:bg-[#3d3270]'}`}
             >
               {o.label}
             </button>

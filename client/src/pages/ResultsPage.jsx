@@ -1,13 +1,11 @@
-import { useSocket } from '../context/SocketContext.jsx';
+import { useGame } from '../context/GameContext.jsx';
 
 export default function ResultsPage() {
-  const { results, players, isHost, restartGame, leaveRoom } = useSocket();
+  const { results, players, playAgain } = useGame();
 
   if (!results) return null;
 
   const { caught, eliminated, impostors, secret, votes, tie, impostorGuessedCorrectly, guesserName } = results;
-
-  const impostorNames = impostors?.map((i) => i.name) || [];
 
   return (
     <div className="min-h-dvh bg-bg flex flex-col px-4 py-8 safe-pt safe-pb">
@@ -42,12 +40,11 @@ export default function ResultsPage() {
           <div className="rounded-2xl bg-red-500/20 border-2 border-red-500 p-5 text-center">
             <div className="text-5xl mb-2">😈</div>
             <h2 className="text-2xl font-bold text-red-300">Impostors Win!</h2>
-            {eliminated && (
+            {eliminated ? (
               <p className="text-gray-400 mt-1 text-sm">
                 The group voted out <span className="text-white font-semibold">{eliminated.name}</span> — but they were innocent!
               </p>
-            )}
-            {!eliminated && (
+            ) : (
               <p className="text-gray-400 mt-1 text-sm">The impostors blended in perfectly!</p>
             )}
           </div>
@@ -56,7 +53,9 @@ export default function ResultsPage() {
         {/* Secret reveal */}
         {secret && (
           <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl p-4 text-center">
-            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Secret Word</p>
+            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              The Secret Was
+            </p>
             <p className="text-2xl font-bold text-purple-300">{secret}</p>
           </div>
         )}
@@ -79,7 +78,7 @@ export default function ResultsPage() {
           </div>
         </div>
 
-        {/* Vote summary */}
+        {/* Vote tally */}
         {votes && Object.keys(votes).length > 0 && (
           <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl p-4">
             <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Vote Tally</p>
@@ -89,16 +88,16 @@ export default function ResultsPage() {
                 .map(([targetId, count]) => {
                   const p = players.find((pl) => pl.id === targetId);
                   if (!p) return null;
-                  const isImpostor = impostors?.some((i) => i.id === targetId);
-                  const isEliminated = eliminated?.id === targetId;
+                  const isImp = impostors?.some((i) => i.id === targetId);
+                  const isElim = eliminated?.id === targetId;
                   return (
                     <div key={targetId} className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-[#352a5e] flex items-center justify-center text-sm font-bold text-gray-300">
                         {p.name[0].toUpperCase()}
                       </div>
                       <span className="flex-1 font-medium text-sm">{p.name}</span>
-                      {isImpostor && <span className="text-xs text-red-400">impostor</span>}
-                      {isEliminated && <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full">eliminated</span>}
+                      {isImp && <span className="text-xs text-red-400">impostor</span>}
+                      {isElim && <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full">eliminated</span>}
                       <span className="text-purple-300 font-bold">{count}</span>
                     </div>
                   );
@@ -109,24 +108,11 @@ export default function ResultsPage() {
 
         {/* Actions */}
         <div className="flex flex-col gap-3 pt-2">
-          {isHost && (
-            <button
-              onClick={restartGame}
-              className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl text-lg transition-colors active:scale-95"
-            >
-              Play Again
-            </button>
-          )}
-          {!isHost && (
-            <div className="w-full h-14 border border-[#352a5e] rounded-2xl flex items-center justify-center">
-              <p className="text-gray-400 text-sm">Waiting for host to start again...</p>
-            </div>
-          )}
           <button
-            onClick={leaveRoom}
-            className="w-full h-11 border border-[#352a5e] hover:border-red-500/40 text-gray-400 hover:text-red-400 rounded-2xl text-sm transition-all"
+            onClick={playAgain}
+            className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl text-lg transition-colors active:scale-95"
           >
-            Leave Room
+            Play Again
           </button>
         </div>
       </div>
