@@ -21,13 +21,15 @@ import {
   resolveVotes,
 } from './gameEngine.js';
 
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
+
 const app = express();
-app.use(cors());
+app.use(cors({ origin: ALLOWED_ORIGIN }));
 app.use(express.json());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: { origin: '*' },
+  cors: { origin: ALLOWED_ORIGIN },
 });
 
 // Health check
