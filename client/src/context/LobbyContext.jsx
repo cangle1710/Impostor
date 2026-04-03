@@ -9,14 +9,14 @@ export function LobbyProvider({ children }) {
   const { playerId, playerName, setName } = usePlayerIdentity();
 
   const [lobbyCode, setLobbyCode] = useState(null);
-  const [lobby, setLobby] = useState(null); // full sanitized lobby from server
+  const [lobby, setLobby] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const pollRef = useRef(null);
 
   // Derived values
-  const phase = lobby?.phase ?? 'IDLE'; // IDLE | LOBBY | ROLE_REVEAL | DISCUSSION | RESULTS
+  const phase = lobby?.phase ?? 'IDLE';
   const players = lobby?.players ?? [];
   const settings = lobby?.settings ?? null;
   const isHost = lobby ? lobby.hostId === playerId : false;
@@ -35,7 +35,7 @@ export function LobbyProvider({ children }) {
     pollRef.current = setInterval(async () => {
       try {
         const res = await fetch(
-          `/api/lobbies/${code}/state?playerId=${pid}&t=${Date.now()}`,
+          `/api/lobbies/state?code=${code}&playerId=${pid}&t=${Date.now()}`,
           { cache: 'no-store' }
         );
         if (res.status === 404) { setLobby(null); setLobbyCode(null); stopPolling(); return; }
@@ -100,58 +100,57 @@ export function LobbyProvider({ children }) {
 
   async function updateSettings(newSettings) {
     if (!lobbyCode) return;
-    // Optimistic update
     setLobby((prev) => prev ? { ...prev, settings: { ...prev.settings, ...newSettings } } : prev);
-    await fetch(`/api/lobbies/${lobbyCode}/settings`, {
+    await fetch('/api/lobbies/settings', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId, settings: newSettings }),
+      body: JSON.stringify({ code: lobbyCode, playerId, settings: newSettings }),
     });
   }
 
   async function startGame() {
     if (!lobbyCode) return;
-    await fetch(`/api/lobbies/${lobbyCode}/start`, {
+    await fetch('/api/lobbies/start', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId }),
+      body: JSON.stringify({ code: lobbyCode, playerId }),
     });
   }
 
   async function startDiscussion() {
     if (!lobbyCode) return;
-    await fetch(`/api/lobbies/${lobbyCode}/discussion`, {
+    await fetch('/api/lobbies/discussion', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId }),
+      body: JSON.stringify({ code: lobbyCode, playerId }),
     });
   }
 
   async function revealResults() {
     if (!lobbyCode) return;
-    await fetch(`/api/lobbies/${lobbyCode}/reveal`, {
+    await fetch('/api/lobbies/reveal', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId }),
+      body: JSON.stringify({ code: lobbyCode, playerId }),
     });
   }
 
   async function playAgain() {
     if (!lobbyCode) return;
-    await fetch(`/api/lobbies/${lobbyCode}/reset`, {
+    await fetch('/api/lobbies/reset', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId }),
+      body: JSON.stringify({ code: lobbyCode, playerId }),
     });
   }
 
   async function leaveLobby() {
     stopPolling();
     if (lobbyCode) {
-      await fetch(`/api/lobbies/${lobbyCode}/leave`, {
+      await fetch('/api/lobbies/leave', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playerId }),
+        body: JSON.stringify({ code: lobbyCode, playerId }),
       }).catch(() => {});
     }
     setLobby(null);
