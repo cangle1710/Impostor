@@ -10,6 +10,7 @@ export default async function handler(req, res) {
   if (!raw) return res.status(404).json({ error: 'Lobby not found' });
 
   const lobby = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  res.setHeader('Cache-Control', 'no-store');
   return res.status(200).json({ lobby: sanitize(lobby, playerId) });
 }
 

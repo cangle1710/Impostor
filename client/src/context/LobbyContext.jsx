@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { usePlayerIdentity } from '../hooks/usePlayerIdentity.js';
 
 const LobbyContext = createContext(null);
@@ -34,12 +34,20 @@ export function LobbyProvider({ children }) {
     stopPolling();
     pollRef.current = setInterval(async () => {
       try {
-        const res = await fetch(`/api/lobbies/${code}/state?playerId=${pid}`);
+        const res = await fetch(
+          `/api/lobbies/${code}/state?playerId=${pid}&t=${Date.now()}`,
+          { cache: 'no-store' }
+        );
         if (res.status === 404) { setLobby(null); setLobbyCode(null); stopPolling(); return; }
-        if (!res.ok) return;
+        if (!res.ok) {
+          console.error('[poll] non-OK response:', res.status, await res.text().catch(() => ''));
+          return;
+        }
         const data = await res.json();
         setLobby(data.lobby);
-      } catch {}
+      } catch (err) {
+        console.error('[poll] fetch error:', err);
+      }
     }, POLL_INTERVAL);
   }, [stopPolling]);
 
