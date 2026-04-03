@@ -14,18 +14,24 @@ const DEFAULT_SETTINGS = {
   showHintToImpostor: false,
   impostersKnowEachOther: true,
   discussionSeconds: 180,
-  allowImpostorGuess: true,
+  // Optional rules (all OFF = original baseline game)
+  allowImpostorGuess: false,
+  allowAccusation: false,
+  trackScores: false,
+  showRoleFlavor: false,
 };
 
 const initialState = {
-  phase: 'SETUP',  // SETUP | ROLE_REVEAL | DISCUSSION | VOTING | RESULTS
+  phase: 'SETUP',  // SETUP | ROLE_REVEAL | DISCUSSION | RESULTS
   players: [],     // [{ id, name }]
   settings: { ...DEFAULT_SETTINGS },
-  round: null,     // { impostorIds, word, hint, categoryLabel, regularQuestion, impostorQuestion, revealOrder }
+  round: null,     // { impostorIds, word, hint, categoryId, categoryLabel, ... revealOrder }
   revealIndex: 0,  // which index in revealOrder is current
   rolesByPlayer: {},// { [playerId]: rolePayload }
   discussionEndsAt: null,
-  votes: {},       // { [targetId]: count }
+  accusation: null, // { accusedId, correct } | null
+  impostorGuess: null, // string | null (the impostor's guess text)
+  scores: {},      // { [playerId]: number } — persists across Play Again
   results: null,
 };
 
@@ -81,16 +87,58 @@ function reducer(state, action) {
       return { ...state, phase: 'DISCUSSION', discussionEndsAt: endsAt };
     }
 
+    case 'SUBMIT_IMPOSTOR_GUESS':
+      return { ...state, impostorGuess: action.guess };
+
+    case 'ACCUSE': {
+      const { accusedId } = action;
+      const correct = state.round.impostorIds.includes(accusedId);
+      const accusation = { accusedId, correct };
+      if (!correct) {
+        // Wrong — stay in discussion, mark failed (no more accusations)
+        return { ...state, accusation };
+      }
+      // Correct — go straight to results
+      const impostors = state.round.impostorIds.map((id) => {
+        const p = state.players.find((pl) => pl.id === id);
+        return { id, name: p?.name || 'Unknown' };
+      });
+      const secret = state.settings.gameMode === 'WORD' ? state.round.word : state.round.regularQuestion;
+      const scores = { ...state.scores };
+      if (state.settings.trackScores) {
+        for (const p of state.players) {
+          if (!state.round.impostorIds.includes(p.id)) scores[p.id] = (scores[p.id] || 0) + 1;
+        }
+      }
+      return { ...state, phase: 'RESULTS', accusation, scores, results: { impostors, secret } };
+    }
+
     case 'REVEAL_RESULTS': {
       const impostors = state.round.impostorIds.map((id) => {
         const p = state.players.find((pl) => pl.id === id);
         return { id, name: p?.name || 'Unknown' };
       });
-      const secret = state.settings.gameMode === 'WORD'
-        ? state.round.word
-        : state.round.regularQuestion;
-      return { ...state, phase: 'RESULTS', results: { impostors, secret } };
+      const secret = state.settings.gameMode === 'WORD' ? state.round.word : state.round.regularQuestion;
+      const impostorGuessCorrect = state.settings.allowImpostorGuess && state.impostorGuess
+        ? state.impostorGuess.trim().toLowerCase() === (state.round.word || '').trim().toLowerCase()
+        : false;
+      const scores = { ...state.scores };
+      if (state.settings.trackScores) {
+        for (const id of state.round.impostorIds) {
+          scores[id] = (scores[id] || 0) + 1;
+          if (impostorGuessCorrect) scores[id] = (scores[id] || 0) + 1; // bonus
+        }
+      }
+      return {
+        ...state,
+        phase: 'RESULTS',
+        scores,
+        results: { impostors, secret, impostorGuessCorrect, impostorGuess: state.impostorGuess },
+      };
     }
+
+    case 'RESET_SCORES':
+      return { ...state, scores: {} };
 
     case 'PLAY_AGAIN':
       return {
@@ -99,9 +147,11 @@ function reducer(state, action) {
         round: null,
         revealIndex: 0,
         rolesByPlayer: {},
-        votes: {},
+        accusation: null,
+        impostorGuess: null,
         results: null,
         discussionEndsAt: null,
+        // scores preserved intentionally when trackScores is on
       };
 
     default:
@@ -127,6 +177,10 @@ export function GameProvider({ children }) {
 
   const revealResults = useCallback(() => dispatch({ type: 'REVEAL_RESULTS' }), []);
 
+  const accuse = useCallback((accusedId) => dispatch({ type: 'ACCUSE', accusedId }), []);
+  const submitImpostorGuess = useCallback((guess) => dispatch({ type: 'SUBMIT_IMPOSTOR_GUESS', guess }), []);
+  const resetScores = useCallback(() => dispatch({ type: 'RESET_SCORES' }), []);
+
   const playAgain = useCallback(() => dispatch({ type: 'PLAY_AGAIN' }), []);
 
   const currentRevealPlayerId = state.round
@@ -149,6 +203,9 @@ export function GameProvider({ children }) {
       advanceReveal,
       startDiscussion,
       revealResults,
+      accuse,
+      submitImpostorGuess,
+      resetScores,
       playAgain,
     }}>
       {children}

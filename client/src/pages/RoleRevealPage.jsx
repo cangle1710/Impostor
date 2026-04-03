@@ -5,7 +5,7 @@ export default function RoleRevealPage() {
   const {
     players, round, revealIndex, rolesByPlayer, settings,
     currentRevealPlayerId, allRevealed,
-    advanceReveal, startDiscussion,
+    advanceReveal, startDiscussion, playAgain,
   } = useGame();
 
   if (!round) return null;
@@ -29,6 +29,12 @@ export default function RoleRevealPage() {
           >
             Start Discussion
           </button>
+          <button
+            onClick={playAgain}
+            className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+          >
+            ← Exit to Setup
+          </button>
         </div>
       </div>
     );
@@ -39,10 +45,17 @@ export default function RoleRevealPage() {
       <div className="w-full max-w-sm mx-auto flex flex-col gap-6 flex-1">
 
         {/* Header */}
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-white">Role Reveal</h2>
-          <p className="text-gray-400 mt-1 text-sm">Pass the phone — each player views privately</p>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={playAgain}
+            className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+          >
+            ← Exit
+          </button>
+          <h2 className="text-xl font-bold text-white">Role Reveal</h2>
+          <div className="w-12" />
         </div>
+        <p className="text-gray-400 text-sm text-center -mt-2">Pass the phone — each player views privately</p>
 
         {/* Progress */}
         <div className="flex flex-col gap-2">

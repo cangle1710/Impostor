@@ -93,7 +93,6 @@ export default function SettingsPanel({ settings, onChange, playerCount }) {
           { key: 'showCategoryToImpostor', label: 'Show Category to Impostor', icon: '👁' },
           { key: 'showHintToImpostor', label: 'Show Hint to Impostor', icon: '💡' },
           { key: 'impostersKnowEachOther', label: 'Impostors Know Each Other', icon: '🤝' },
-          { key: 'allowImpostorGuess', label: 'Allow Impostor Word Guess', icon: '🎯' },
         ].map((t, i, arr) => (
           <div
             key={t.key}
@@ -102,6 +101,37 @@ export default function SettingsPanel({ settings, onChange, playerCount }) {
             <div className="flex items-center gap-2">
               <span className="text-base">{t.icon}</span>
               <p className="text-sm">{t.label}</p>
+            </div>
+            <Toggle
+              checked={settings[t.key]}
+              onChange={(v) => update(t.key, v)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Optional Rules */}
+      <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-[#352a5e]">
+          <p className="font-semibold text-sm">Optional Rules</p>
+          <p className="text-gray-500 text-xs mt-0.5">All off by default — original game is the baseline</p>
+        </div>
+        {[
+          { key: 'showRoleFlavor',   label: 'Role Flavors',        icon: '🎭', sub: 'Crewmates get a job title (e.g. "Chef")' },
+          { key: 'allowAccusation',  label: 'Early Accusation',    icon: '🫵', sub: 'Players can accuse during discussion' },
+          { key: 'allowImpostorGuess', label: 'Impostor Word Guess', icon: '🎯', sub: 'Impostor can guess the secret word' },
+          { key: 'trackScores',      label: 'Score Tracking',      icon: '🏆', sub: 'Accumulate points across rounds' },
+        ].map((t, i, arr) => (
+          <div
+            key={t.key}
+            className={`flex items-start justify-between px-4 py-3 gap-3 ${i < arr.length - 1 ? 'border-b border-[#352a5e]' : ''}`}
+          >
+            <div className="flex items-start gap-2 flex-1 min-w-0">
+              <span className="text-base mt-0.5">{t.icon}</span>
+              <div>
+                <p className="text-sm">{t.label}</p>
+                <p className="text-xs text-gray-500">{t.sub}</p>
+              </div>
             </div>
             <Toggle
               checked={settings[t.key]}

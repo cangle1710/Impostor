@@ -66,6 +66,13 @@ export default function RoleCard({ rolePayload, gameMode, onDone }) {
               </div>
             )}
 
+            {rolePayload.roleName && (
+              <div className="bg-green-900/30 border border-green-500/30 rounded-xl px-4 py-3">
+                <p className="text-xs text-green-500 mb-0.5">Your Role</p>
+                <p className="text-green-200 font-semibold">{rolePayload.roleName}</p>
+              </div>
+            )}
+
             {rolePayload.category && (
               <div className="bg-[#1e1640] rounded-xl px-4 py-3">
                 <p className="text-xs text-gray-500 mb-0.5">Category</p>
