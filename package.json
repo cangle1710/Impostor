@@ -2,9 +2,14 @@
   "name": "impostor-game",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "npm run dev --prefix client",
     "build": "npm run build --prefix client",
-    "install:all": "npm i --prefix client"
+    "install:all": "npm i && npm i --prefix client"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.34.3",
+    "dotenv": "^16.4.5"
   }
 }

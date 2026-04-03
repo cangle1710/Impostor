@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useGame } from '../context/GameContext.jsx';
 import SettingsPanel from '../components/SettingsPanel.jsx';
 
-export default function SetupPage() {
+export default function SetupPage({ onExit }) {
   const { players, settings, addPlayer, removePlayer, updateSettings, startGame } = useGame();
   const [nameInput, setNameInput] = useState('');
 
@@ -21,6 +21,13 @@ export default function SetupPage() {
 
         {/* Header */}
         <div className="text-center pt-2">
+          {onExit && (
+            <div className="flex justify-start mb-2">
+              <button onClick={onExit} className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+                ← Back
+              </button>
+            </div>
+          )}
           <div className="text-5xl mb-2">🕵️</div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Impostor</h1>
           <p className="text-gray-400 text-sm mt-1">Pass the phone — everyone plays together</p>
