@@ -30,6 +30,7 @@ export default function OnlineRoleRevealPage() {
             rolePayload={myRole}
             gameMode={settings?.gameMode ?? 'WORD'}
             onDone={() => setRoleViewed(true)}
+            doneLabel="Got it — I'm ready"
           />
         </div>
 

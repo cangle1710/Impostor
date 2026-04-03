@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function RoleCard({ rolePayload, gameMode, onDone }) {
+export default function RoleCard({ rolePayload, gameMode, onDone, doneLabel = 'Done — Pass the phone' }) {
   const [revealed, setRevealed] = useState(false);
   const [autoHiding, setAutoHiding] = useState(false);
 
@@ -119,7 +119,7 @@ export default function RoleCard({ rolePayload, gameMode, onDone }) {
         onClick={onDone}
         className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl text-lg transition-colors active:scale-95"
       >
-        Done — Pass the phone
+        {doneLabel}
       </button>
     </div>
   );
