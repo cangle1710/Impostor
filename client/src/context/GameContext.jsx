@@ -19,6 +19,7 @@ const DEFAULT_SETTINGS = {
   allowAccusation: false,
   trackScores: false,
   showRoleFlavor: false,
+  chaosMode: false,
 };
 
 const initialState = {
@@ -61,11 +62,17 @@ function reducer(state, action) {
       return { ...state, settings: action.settings };
 
     case 'START_GAME': {
-      const round = buildRound(state.players, state.settings);
+      let activeSettings = state.settings;
+      if (state.settings.chaosMode) {
+        const maxImposters = Math.max(1, Math.floor((state.players.length - 1) / 2));
+        const randomImposters = Math.floor(Math.random() * maxImposters) + 1;
+        activeSettings = { ...state.settings, numImposters: randomImposters };
+      }
+      const round = buildRound(state.players, activeSettings);
       // Pre-compute all role payloads now (phone is passed around, all data local)
       const rolesByPlayer = {};
       for (const p of state.players) {
-        rolesByPlayer[p.id] = getRolePayload(round, state.settings, state.players, p.id);
+        rolesByPlayer[p.id] = getRolePayload(round, activeSettings, state.players, p.id);
       }
       return {
         ...state,

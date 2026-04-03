@@ -30,19 +30,25 @@ export default function SettingsPanel({ settings, onChange, playerCount }) {
         </div>
         <div className="bg-[#1e1640] border border-[#352a5e] rounded-2xl p-4">
           <p className="text-gray-400 text-xs mb-2">Impostors</p>
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => update('numImposters', Math.max(1, settings.numImposters - 1))}
-              disabled={settings.numImposters <= 1}
-              className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
-            >−</button>
-            <span className="text-2xl font-bold">{settings.numImposters}</span>
-            <button
-              onClick={() => update('numImposters', Math.min(maxImposters, settings.numImposters + 1))}
-              disabled={settings.numImposters >= maxImposters}
-              className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
-            >+</button>
-          </div>
+          {settings.chaosMode ? (
+            <div className="flex items-center justify-center h-8">
+              <span className="text-2xl font-bold text-orange-400 tracking-widest">???</span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => update('numImposters', Math.max(1, settings.numImposters - 1))}
+                disabled={settings.numImposters <= 1}
+                className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
+              >−</button>
+              <span className="text-2xl font-bold">{settings.numImposters}</span>
+              <button
+                onClick={() => update('numImposters', Math.min(maxImposters, settings.numImposters + 1))}
+                disabled={settings.numImposters >= maxImposters}
+                className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
+              >+</button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -117,6 +123,7 @@ export default function SettingsPanel({ settings, onChange, playerCount }) {
           <p className="text-gray-500 text-xs mt-0.5">All off by default — original game is the baseline</p>
         </div>
         {[
+          { key: 'chaosMode',        label: 'Chaos Mode',          icon: '🌀', sub: 'Nobody knows how many impostors there are' },
           { key: 'showRoleFlavor',   label: 'Role Flavors',        icon: '🎭', sub: 'Crewmates get a job title (e.g. "Chef")' },
           { key: 'allowAccusation',  label: 'Early Accusation',    icon: '🫵', sub: 'Players can accuse during discussion' },
           { key: 'allowImpostorGuess', label: 'Impostor Word Guess', icon: '🎯', sub: 'Impostor can guess the secret word' },

@@ -77,6 +77,9 @@ export default function DiscussionPage() {
             <li>• Ask each player questions about the {settings.gameMode === 'WORD' ? 'word' : 'topic'}</li>
             <li>• Watch for vague or inconsistent answers</li>
             <li>• Impostors: blend in and misdirect!</li>
+            {settings.chaosMode && (
+              <li>• Nobody knows how many impostors are among you</li>
+            )}
             {settings.allowImpostorGuess && (
               <li>• Impostors can secretly guess the word to win even if caught</li>
             )}
