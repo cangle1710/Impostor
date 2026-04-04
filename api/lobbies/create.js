@@ -27,12 +27,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'playerId and playerName required' });
   }
 
-  // Atomic increment — race-condition-safe cap
-  const newCount = await redis.incr('lobbies:active');
-  if (newCount > 10) {
-    await redis.decr('lobbies:active');
-    return res.status(429).json({ error: 'Max 10 active lobbies. Try again later.' });
-  }
+  await redis.incr('lobbies:active');
 
   // Find a unique 4-digit code
   let code;
