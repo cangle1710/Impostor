@@ -15,6 +15,7 @@ export default async function handler(req, res) {
 
   if (lobby.phase !== 'DISCUSSION') return res.status(409).json({ error: 'Not in discussion phase' });
   if (!lobby.settings.allowAccusation) return res.status(400).json({ error: 'Accusations not enabled' });
+  if (lobby.hostId !== playerId) return res.status(403).json({ error: 'Only the host can accuse' });
   if (lobby.round.accusation) return res.status(409).json({ error: 'Accusation already made' });
 
   const correct = lobby.round.impostorIds.includes(accusedId);

@@ -130,7 +130,7 @@ export default function SettingsPanel({ settings, onChange, playerCount }) {
         {[
           { key: 'chaosMode',        label: 'Chaos Mode',          icon: '🌀', sub: 'Nobody knows how many impostors there are' },
           { key: 'showRoleFlavor',   label: 'Role Flavors',        icon: '🎭', sub: 'Crewmates get a job title (e.g. "Chef")' },
-          { key: 'allowAccusation',  label: 'Early Accusation',    icon: '🫵', sub: 'Players can accuse during discussion' },
+          { key: 'allowAccusation',  label: 'Early Accusation',    icon: '���', sub: 'Host can accuse once — wrong guess and impostors survive' },
           { key: 'allowImpostorGuess', label: 'Impostor Word Guess', icon: '🎯', sub: 'Impostor can guess the secret word' },
           { key: 'trackScores',      label: 'Score Tracking',      icon: '🏆', sub: 'Accumulate points across rounds' },
         ].map((t, i, arr) => (

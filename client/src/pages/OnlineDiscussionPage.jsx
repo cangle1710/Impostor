@@ -92,8 +92,8 @@ export default function OnlineDiscussionPage() {
           </ul>
         </div>
 
-        {/* Optional: Accusation */}
-        {settings?.allowAccusation && (
+        {/* Optional: Accusation (host only — group decides together, host makes the call) */}
+        {settings?.allowAccusation && isHost && (
           <button
             onClick={() => setShowAccuseModal(true)}
             disabled={accusationDone}
@@ -104,6 +104,9 @@ export default function OnlineDiscussionPage() {
           >
             {accusationDone ? 'Accusation used' : 'Accuse Someone'}
           </button>
+        )}
+        {settings?.allowAccusation && !isHost && !accusationDone && (
+          <p className="text-gray-500 text-xs text-center">The host can make one accusation on behalf of the group</p>
         )}
 
         {/* Optional: Impostor guess (only shown to impostors) */}
