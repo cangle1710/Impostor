@@ -57,12 +57,14 @@ export default async function handler(req, res) {
 }
 
 function sanitize(lobby, playerId) {
-  if (!lobby.round?.rolesByPlayer) return lobby;
+  if (!lobby.round) return lobby;
   return {
     ...lobby,
     round: {
-      ...lobby.round,
-      rolesByPlayer: { [playerId]: lobby.round.rolesByPlayer[playerId] ?? null },
+      discussionEndsAt: lobby.round.discussionEndsAt ?? null,
+      results: lobby.round.results ?? null,
+      categoryLabel: lobby.round.categoryLabel ?? null,
+      rolesByPlayer: { [playerId]: lobby.round.rolesByPlayer?.[playerId] ?? null },
     },
   };
 }

@@ -20,6 +20,8 @@ export default function SettingsPanel({ settings, onChange, playerCount }) {
 
   const maxImposters = Math.max(1, playerCount - 1);
 
+  const recommended = playerCount <= 5 ? 1 : playerCount <= 7 ? 2 : playerCount <= 9 ? 2 : 3;
+
   return (
     <div className="flex flex-col gap-4">
       {/* Players & Impostors */}
@@ -35,18 +37,21 @@ export default function SettingsPanel({ settings, onChange, playerCount }) {
               <span className="text-2xl font-bold text-orange-400 tracking-widest">???</span>
             </div>
           ) : (
-            <div className="flex items-center justify-between">
-              <button
-                onClick={() => update('numImposters', Math.max(1, settings.numImposters - 1))}
-                disabled={settings.numImposters <= 1}
-                className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
-              >−</button>
-              <span className="text-2xl font-bold">{settings.numImposters}</span>
-              <button
-                onClick={() => update('numImposters', Math.min(maxImposters, settings.numImposters + 1))}
-                disabled={settings.numImposters >= maxImposters}
-                className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
-              >+</button>
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center justify-between w-full">
+                <button
+                  onClick={() => update('numImposters', Math.max(1, settings.numImposters - 1))}
+                  disabled={settings.numImposters <= 1}
+                  className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
+                >−</button>
+                <span className="text-2xl font-bold">{settings.numImposters}</span>
+                <button
+                  onClick={() => update('numImposters', Math.min(maxImposters, settings.numImposters + 1))}
+                  disabled={settings.numImposters >= maxImposters}
+                  className="w-8 h-8 rounded-lg bg-[#352a5e] text-white font-bold disabled:opacity-30"
+                >+</button>
+              </div>
+              <p className="text-[10px] text-gray-500">{recommended} recommended</p>
             </div>
           )}
         </div>

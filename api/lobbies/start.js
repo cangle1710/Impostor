@@ -16,11 +16,13 @@ export default async function handler(req, res) {
   if (lobby.phase !== 'LOBBY') return res.status(409).json({ error: 'Game already started' });
   if (lobby.players.length < 3) return res.status(400).json({ error: 'Need at least 3 players' });
 
+  const maxImposters = Math.max(1, Math.floor((lobby.players.length - 1) / 2));
   let activeSettings = lobby.settings;
   if (lobby.settings.chaosMode) {
-    const maxImposters = Math.max(1, Math.floor((lobby.players.length - 1) / 2));
     const randomImposters = Math.floor(Math.random() * maxImposters) + 1;
     activeSettings = { ...lobby.settings, numImposters: randomImposters };
+  } else if (activeSettings.numImposters > maxImposters) {
+    activeSettings = { ...lobby.settings, numImposters: maxImposters };
   }
 
   const round = buildRound(lobby.players, activeSettings);
