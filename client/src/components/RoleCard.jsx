@@ -19,7 +19,7 @@ export default function RoleCard({ rolePayload, gameMode, onDone, doneLabel = 'D
     const hideTimer = setTimeout(() => {
       setAutoHiding(true);
       setTimeout(() => setRevealed(false), 500);
-    }, 12000);
+    }, 5000);
     return () => clearTimeout(hideTimer);
   }, [revealed]);
 

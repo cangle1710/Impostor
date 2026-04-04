@@ -22,6 +22,7 @@ function sanitize(lobby, playerId) {
       discussionEndsAt: lobby.round.discussionEndsAt ?? null,
       results: lobby.round.results ?? null,
       categoryLabel: lobby.round.categoryLabel ?? null,
+      accusation: lobby.round.accusation ?? null,
       rolesByPlayer: { [playerId]: lobby.round.rolesByPlayer?.[playerId] ?? null },
     },
   };

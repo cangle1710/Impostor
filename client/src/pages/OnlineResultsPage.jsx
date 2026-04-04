@@ -6,7 +6,10 @@ export default function OnlineResultsPage() {
   const results = round?.results;
   if (!results) return null;
 
-  const { impostors, secret } = results;
+  const { impostors, secret, accusation, impostorGuessCorrect, impostorGuess } = results;
+
+  const crewmatesWon = accusation?.correct === true;
+  const impostorSavedByGuess = crewmatesWon && impostorGuessCorrect;
 
   return (
     <div className="min-h-dvh bg-bg flex flex-col px-4 py-8 safe-pt safe-pb">
@@ -14,10 +17,32 @@ export default function OnlineResultsPage() {
 
         {/* Header */}
         <div className="text-center">
-          <div className="text-5xl mb-3">🔍</div>
-          <h2 className="text-3xl font-bold text-white">Reveal</h2>
-          <p className="text-gray-400 text-sm mt-1">Here's what everyone was hiding</p>
+          <div className="text-5xl mb-3">{crewmatesWon ? (impostorSavedByGuess ? '🤯' : '🎉') : '😈'}</div>
+          <h2 className="text-3xl font-bold text-white">
+            {impostorSavedByGuess
+              ? 'Impostor Guessed It!'
+              : crewmatesWon
+                ? 'Crewmates Win!'
+                : 'Impostors Survive!'}
+          </h2>
+          <p className="text-gray-400 text-sm mt-1">
+            {impostorSavedByGuess
+              ? 'Caught but guessed the word correctly!'
+              : crewmatesWon
+                ? `${accusation.accusedName} was correctly accused!`
+                : "Here's what everyone was hiding"}
+          </p>
         </div>
+
+        {/* Impostor guess result */}
+        {impostorGuess && (
+          <div className={`border rounded-2xl px-4 py-3 text-center ${impostorGuessCorrect ? 'bg-green-500/10 border-green-500/40' : 'bg-red-500/10 border-red-500/40'}`}>
+            <p className={`font-semibold text-sm ${impostorGuessCorrect ? 'text-green-300' : 'text-red-300'}`}>
+              {impostorGuessCorrect ? 'Impostor guessed correctly!' : 'Impostor guessed wrong'}
+            </p>
+            <p className="text-gray-400 text-xs mt-0.5">Guess: "{impostorGuess}"</p>
+          </div>
+        )}
 
         {/* Secret word / question */}
         {secret && (

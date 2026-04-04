@@ -29,10 +29,18 @@ export default function OnlineRoleRevealPage() {
           <RoleCard
             rolePayload={myRole}
             gameMode={settings?.gameMode ?? 'WORD'}
-            onDone={() => setRoleViewed(true)}
-            doneLabel="Got it — I'm ready"
           />
         </div>
+
+        {/* Got it button — always available */}
+        {!roleViewed && (
+          <button
+            onClick={() => setRoleViewed(true)}
+            className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl text-lg transition-colors active:scale-95"
+          >
+            Got it — I'm ready
+          </button>
+        )}
 
         {/* Host: start discussion once ready */}
         {isHost && roleViewed && (

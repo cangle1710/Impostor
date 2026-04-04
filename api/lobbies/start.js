@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   }
 
   lobby.phase = 'ROLE_REVEAL';
-  lobby.round = { ...round, rolesByPlayer, discussionEndsAt: null, results: null };
+  lobby.round = { ...round, rolesByPlayer, discussionEndsAt: null, results: null, accusation: null, impostorGuess: null };
 
   await redis.set(`lobby:${code}`, JSON.stringify(lobby), { ex: 7200 });
   return res.status(200).json({ ok: true });

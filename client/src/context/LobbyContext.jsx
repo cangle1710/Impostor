@@ -22,7 +22,7 @@ export function LobbyProvider({ children }) {
   const isHost = lobby ? lobby.hostId === playerId : false;
   const myRole = lobby?.round?.rolesByPlayer?.[playerId] ?? null;
   const round = lobby?.round
-    ? { discussionEndsAt: lobby.round.discussionEndsAt, results: lobby.round.results, categoryLabel: lobby.round.categoryLabel }
+    ? { discussionEndsAt: lobby.round.discussionEndsAt, results: lobby.round.results, categoryLabel: lobby.round.categoryLabel, accusation: lobby.round.accusation }
     : null;
 
   // ── Polling ──────────────────────────────────────────────────────────────
@@ -126,6 +126,24 @@ export function LobbyProvider({ children }) {
     });
   }
 
+  async function accuse(accusedId) {
+    if (!lobbyCode) return;
+    await fetch('/api/lobbies/accuse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: lobbyCode, playerId, accusedId }),
+    });
+  }
+
+  async function submitImpostorGuess(guess) {
+    if (!lobbyCode) return;
+    await fetch('/api/lobbies/guess', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: lobbyCode, playerId, guess }),
+    });
+  }
+
   async function revealResults() {
     if (!lobbyCode) return;
     await fetch('/api/lobbies/reveal', {
@@ -163,7 +181,7 @@ export function LobbyProvider({ children }) {
       lobbyCode, phase, players, settings, isHost, myRole, round,
       error, isLoading,
       createLobby, joinLobby, updateSettings,
-      startGame, startDiscussion, revealResults, playAgain, leaveLobby,
+      startGame, startDiscussion, accuse, submitImpostorGuess, revealResults, playAgain, leaveLobby,
     }}>
       {children}
     </LobbyContext.Provider>

@@ -20,8 +20,18 @@ export default async function handler(req, res) {
   });
   const secret = lobby.settings.gameMode === 'WORD' ? lobby.round.word : lobby.round.regularQuestion;
 
+  const impostorGuessCorrect = lobby.settings.allowImpostorGuess && lobby.round.impostorGuess
+    ? lobby.round.impostorGuess.trim().toLowerCase() === (lobby.round.word || '').trim().toLowerCase()
+    : false;
+
   lobby.phase = 'RESULTS';
-  lobby.round.results = { impostors, secret };
+  lobby.round.results = {
+    impostors,
+    secret,
+    accusation: lobby.round.accusation ?? null,
+    impostorGuessCorrect,
+    impostorGuess: lobby.round.impostorGuess ?? null,
+  };
 
   await redis.set(`lobby:${code}`, JSON.stringify(lobby), { ex: 7200 });
   return res.status(200).json({ ok: true });
