@@ -102,7 +102,6 @@ export default function SettingsPanel({ settings, onChange, playerCount }) {
         {/* Toggles */}
         {[
           { key: 'showCategoryToImpostor', label: 'Show Category to Impostor', icon: '👁' },
-          { key: 'showHintToImpostor', label: 'Show Hint to Impostor', icon: '💡' },
           { key: 'impostersKnowEachOther', label: 'Impostors Know Each Other', icon: '🤝' },
         ].map((t, i, arr) => (
           <div

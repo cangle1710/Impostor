@@ -39,14 +39,13 @@ function pickRandom(arr) {
 
 /**
  * Given players array and settings, returns round data:
- * { impostorIds, word, hint, categoryLabel, regularQuestion, impostorQuestion, revealOrder }
+ * { impostorIds, word, categoryLabel, regularQuestion, impostorQuestion, revealOrder }
  */
 export function buildRound(players, settings) {
   const shuffled = shuffle(players);
   const impostorIds = shuffled.slice(0, settings.numImposters).map((p) => p.id);
 
   let word = null;
-  let hint = null;
   let categoryId = null;
   let categoryLabel = null;
   let regularQuestion = null;
@@ -60,7 +59,6 @@ export function buildRound(players, settings) {
     const cat = pickRandom(pool.length ? pool : wordCategories);
     const entry = pickRandom(cat.words);
     word = entry.word;
-    hint = entry.hint;
     categoryId = cat.id;
     categoryLabel = cat.label;
   } else {
@@ -78,7 +76,7 @@ export function buildRound(players, settings) {
 
   const revealOrder = shuffle(players).map((p) => p.id);
 
-  return { impostorIds, word, hint, categoryId, categoryLabel, regularQuestion, impostorQuestion, revealOrder };
+  return { impostorIds, word, categoryId, categoryLabel, regularQuestion, impostorQuestion, revealOrder };
 }
 
 /**
@@ -90,7 +88,6 @@ export function getRolePayload(round, settings, players, playerId) {
 
   if (settings.gameMode === 'WORD') {
     payload.word = isImpostor ? null : round.word;
-    payload.hint = isImpostor && settings.showHintToImpostor ? round.hint : null;
     payload.category = isImpostor
       ? (settings.showCategoryToImpostor ? round.categoryLabel : null)
       : round.categoryLabel;

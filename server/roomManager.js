@@ -29,7 +29,6 @@ export function createRoom(hostId, hostName) {
       gameMode: 'WORD',
       category: 'all',
       showCategoryToImpostor: false,
-      showHintToImpostor: false,
       impostersKnowEachOther: true,
       discussionSeconds: 180,
       allowImpostorGuess: true,

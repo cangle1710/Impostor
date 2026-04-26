@@ -21,7 +21,6 @@ export function assignRoles(room) {
   const impostorIds = shuffled.slice(0, settings.numImposters).map((p) => p.id);
 
   let word = null;
-  let hint = null;
   let categoryLabel = null;
   let regularQuestion = null;
   let impostorQuestion = null;
@@ -34,7 +33,6 @@ export function assignRoles(room) {
     const cat = pickRandom(pool.length ? pool : wordCategories);
     const entry = pickRandom(cat.words);
     word = entry.word;
-    hint = entry.hint;
     categoryLabel = cat.label;
   } else {
     const pool =
@@ -61,7 +59,6 @@ export function assignRoles(room) {
   room.round = {
     impostorIds,
     word,
-    hint,
     regularQuestion,
     impostorQuestion,
     categoryLabel,
@@ -85,7 +82,6 @@ export function getRolePayload(room, playerId) {
 
   if (settings.gameMode === 'WORD') {
     payload.word = isImpostor ? null : round.word;
-    payload.hint = isImpostor && settings.showHintToImpostor ? round.hint : null;
     payload.category =
       isImpostor && settings.showCategoryToImpostor ? round.categoryLabel : null;
     if (!isImpostor) payload.category = round.categoryLabel; // crewmates always see category
