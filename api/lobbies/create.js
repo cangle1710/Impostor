@@ -5,7 +5,6 @@ const DEFAULT_SETTINGS = {
   gameMode: 'WORD',
   category: 'all',
   showCategoryToImpostor: false,
-  showHintToImpostor: false,
   impostersKnowEachOther: true,
   discussionSeconds: 180,
   allowImpostorGuess: false,

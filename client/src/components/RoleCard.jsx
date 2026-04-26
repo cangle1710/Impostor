@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 
 export default function RoleCard({ rolePayload, gameMode, onDone, doneLabel = 'Done — Pass the phone' }) {
   const [revealed, setRevealed] = useState(false);
-  const [autoHiding, setAutoHiding] = useState(false);
 
   const role = rolePayload?.role;
   const isImpostor = role === 'IMPOSTOR';
@@ -10,23 +9,12 @@ export default function RoleCard({ rolePayload, gameMode, onDone, doneLabel = 'D
   // Reset when player changes
   useEffect(() => {
     setRevealed(false);
-    setAutoHiding(false);
   }, [rolePayload]);
-
-  // Auto-hide after 12 seconds
-  useEffect(() => {
-    if (!revealed) return;
-    const hideTimer = setTimeout(() => {
-      setAutoHiding(true);
-      setTimeout(() => setRevealed(false), 500);
-    }, 5000);
-    return () => clearTimeout(hideTimer);
-  }, [revealed]);
 
   if (!revealed) {
     return (
       <button
-        onClick={() => { setRevealed(true); setAutoHiding(false); }}
+        onClick={() => setRevealed(true)}
         className="w-full aspect-[3/4] max-h-72 rounded-2xl border-2 border-purple-600/50 bg-[#1e1640]
           flex flex-col items-center justify-center gap-3 cursor-pointer
           active:scale-95 transition-transform hover:border-purple-500 hover:bg-[#251c4a]"
@@ -41,9 +29,8 @@ export default function RoleCard({ rolePayload, gameMode, onDone, doneLabel = 'D
   return (
     <div className="flex flex-col gap-4">
       <div
-        className={`w-full rounded-2xl border-2 p-5 flex flex-col gap-4 transition-opacity duration-500
-          ${isImpostor ? 'border-red-500 bg-red-500/10' : 'border-green-500 bg-green-500/10'}
-          ${autoHiding ? 'opacity-0' : 'opacity-100'}`}
+        className={`w-full rounded-2xl border-2 p-5 flex flex-col gap-4
+          ${isImpostor ? 'border-red-500 bg-red-500/10' : 'border-green-500 bg-green-500/10'}`}
       >
         {/* Role badge */}
         <div className={`self-start px-4 py-1.5 rounded-full font-bold text-sm tracking-wide
@@ -79,13 +66,6 @@ export default function RoleCard({ rolePayload, gameMode, onDone, doneLabel = 'D
                 <p className="text-purple-300 font-semibold">{rolePayload.category}</p>
               </div>
             )}
-
-            {rolePayload.hint && (
-              <div className="bg-[#1e1640] rounded-xl px-4 py-3">
-                <p className="text-xs text-gray-500 mb-0.5">Hint</p>
-                <p className="text-yellow-300">{rolePayload.hint}</p>
-              </div>
-            )}
           </>
         ) : (
           <>
@@ -112,15 +92,16 @@ export default function RoleCard({ rolePayload, gameMode, onDone, doneLabel = 'D
           </div>
         )}
 
-        <p className="text-center text-gray-500 text-xs">Card hides automatically in a few seconds</p>
       </div>
 
-      <button
-        onClick={onDone}
-        className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl text-lg transition-colors active:scale-95"
-      >
-        {doneLabel}
-      </button>
+      {onDone && (
+        <button
+          onClick={onDone}
+          className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl text-lg transition-colors active:scale-95"
+        >
+          {doneLabel}
+        </button>
+      )}
     </div>
   );
 }

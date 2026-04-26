@@ -11,7 +11,6 @@ const DEFAULT_SETTINGS = {
   gameMode: 'WORD',
   category: 'all',
   showCategoryToImpostor: false,
-  showHintToImpostor: false,
   impostersKnowEachOther: true,
   discussionSeconds: 180,
   // Optional rules (all OFF = original baseline game)
@@ -26,7 +25,7 @@ const initialState = {
   phase: 'SETUP',  // SETUP | ROLE_REVEAL | DISCUSSION | RESULTS
   players: [],     // [{ id, name }]
   settings: { ...DEFAULT_SETTINGS },
-  round: null,     // { impostorIds, word, hint, categoryId, categoryLabel, ... revealOrder }
+  round: null,     // { impostorIds, word, categoryId, categoryLabel, ... revealOrder }
   revealIndex: 0,  // which index in revealOrder is current
   rolesByPlayer: {},// { [playerId]: rolePayload }
   discussionEndsAt: null,
