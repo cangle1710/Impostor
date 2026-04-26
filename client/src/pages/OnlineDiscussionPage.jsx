@@ -53,7 +53,6 @@ export default function OnlineDiscussionPage() {
             <Timer
               endsAt={endsAt}
               totalSeconds={settings?.discussionSeconds ?? 180}
-              onExpire={isHost ? revealResults : undefined}
             />
           </div>
         )}

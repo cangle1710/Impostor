@@ -48,7 +48,6 @@ export default function DiscussionPage() {
           <Timer
             endsAt={discussionEndsAt}
             totalSeconds={settings.discussionSeconds}
-            onExpire={revealResults}
           />
         </div>
 
